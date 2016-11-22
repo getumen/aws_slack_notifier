@@ -42,7 +42,7 @@ if __name__ == '__main__':
     text = "%sまでのAWSの料金は、$%sです。" % (date, maximum)
 
     params = {'token':SLACK_TOKEN,   # トークン
-             'channel':'bossgakita', # チャンネルID
+             'channel':'aws_billing', # チャンネルID
              'text': text    # 送信するテキスト
     }
 
