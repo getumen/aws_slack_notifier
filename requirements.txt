@@ -1,3 +1,2 @@
 requests
-boto
-pytz
+boto3

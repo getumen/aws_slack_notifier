@@ -1,44 +1,34 @@
 import datetime
-import boto.ec2.cloudwatch
-import env
+import boto3
 import requests
 import urllib
+import pytz
+import os
+
+AWS_REGION = os.environ['AWS_REGION']
+AWS_KEY_ID = os.environ['AWS_KEY_ID']
+AWS_SECRET_KEY = os.environ['AWS_SECRET_KEY']
+SLACK_TOKEN = os.environ['SLACK_TOKEN']
+
 
 if __name__ == '__main__':
-
-    conn = boto.ec2.cloudwatch.connect_to_region(
-        AWS_REGION,
-        aws_access_key_id=env.AWS_KEY_ID,
-        aws_secret_access_key=env.AWS_SECRET_KEY)
+    client = boto3.client(
+        'cloudwatch',
+        aws_access_key_id=AWS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_KEY
+    )
+    print(client.describe_alarm_history())
 
     end = datetime.datetime.utcnow()
-    start = datetime.datetime(end.year, end.month, 1).astimezone(pytz.utc)
-
-    services = conn.list_metrics()
+    start = datetime.datetime(end.year, end.month, 1)
 
     text = ''
 
-    for service in services:
-        value = conn.get_metric_statistics(
-            3600,
-            start,
-            end,
-            'EstimatedCharges',
-            'AWS/Billing',
-            'Maximum',
-            dimensions = {'ServiceName':[service], 'Currency':['USD']}
-            )
-
-        if not value:
-            continue
-        text += service + ': '
-        text += str(value) + '/'
-        text +=  str(value[0]['Maximum']) + '\n'
-
-    params = {'token':env.SLACK_TOKEN,   # トークン
+    params = {'token':SLACK_TOKEN,   # トークン
              'channel':'admin', # チャンネルID
              'text': 'bot'    # 送信するテキスト
     }
+
     params = urllib.parse.urlencode(params)
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    requests.get("https://slack.com/api/chat.postMessage", params=params, headers=headers)
+#    requests.get("https://slack.com/api/chat.postMessage", params=params, headers=headers)
