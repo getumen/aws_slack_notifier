@@ -9,6 +9,7 @@ AWS_REGION = os.environ['AWS_REGION']
 AWS_KEY_ID = os.environ['AWS_KEY_ID']
 AWS_SECRET_KEY = os.environ['AWS_SECRET_KEY']
 SLACK_TOKEN = os.environ['SLACK_TOKEN']
+SLACK_CHANNEL = os.environ['SLACK_CHANNEL']
 
 
 if __name__ == '__main__':
@@ -19,12 +20,12 @@ if __name__ == '__main__':
         region_name=AWS_REGION,
     )
 
-    end = datetime.datetime.today()
+    end = datetime.datetime.now()
     start = datetime.datetime(end.year, end.month, 1)
     response = client.get_metric_statistics (
         MetricName = 'EstimatedCharges',
         Namespace  = 'AWS/Billing',
-        Period     = 60*60*24,
+        Period     = 60*60*24*7,
         StartTime  = start,
         EndTime    = end,
         Statistics = ['Maximum'],
@@ -41,8 +42,8 @@ if __name__ == '__main__':
 
     text = "%sまでのAWSの料金は、$%sです。" % (date, maximum)
 
-    params = {'token':SLACK_TOKEN,   # トークン
-             'channel':'aws_billing', # チャンネルID
+    params = {'token': SLACK_TOKEN,   # トークン
+             'channel': SLACK_CHANNEL, # チャンネルID
              'text': text    # 送信するテキスト
     }
 
