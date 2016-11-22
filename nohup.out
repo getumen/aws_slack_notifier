@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "notify.py", line 2, in <module>
+    import boto3
+ImportError: No module named 'boto3'

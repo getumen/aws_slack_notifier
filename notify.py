@@ -4,6 +4,7 @@ import requests
 import urllib
 import pytz
 import os
+import time
 
 AWS_REGION = os.environ['AWS_REGION']
 AWS_KEY_ID = os.environ['AWS_KEY_ID']
@@ -50,3 +51,4 @@ if __name__ == '__main__':
     params = urllib.parse.urlencode(params)
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     requests.get("https://slack.com/api/chat.postMessage", params=params, headers=headers)
+    time.sleep(60*60*24)
