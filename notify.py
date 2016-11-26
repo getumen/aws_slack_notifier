@@ -40,7 +40,8 @@ if __name__ == '__main__':
         )
 
         maximum = response['Datapoints'][0]['Maximum']
-        date    = response['Datapoints'][0]['Timestamp'].strftime('%Y年%m月%d日')
+        # date    = response['Datapoints'][0]['Timestamp'].strftime('%Y年%m月%d日')
+        date    = end.strftime('%Y年%m月%d日')
 
         text = "%sまでのAWSの料金は、$%sです。" % (date, maximum)
 
