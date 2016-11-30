@@ -38,11 +38,12 @@ if __name__ == '__main__':
                 }
             ]
         )
+
         text = ''
         for resp in response['Datapoints']:
             maximum = resp['Maximum']
             date    = resp['Timestamp'].strftime('%Y年%m月%d日')
-            text += "%sまでのAWSの料金は、$%sです。\n" % (date, maximum)
+            text += "%sから%sまでのAWSの料金は、$%sです。\n" % (start.strftime('%Y年%m月%d日'), date, maximum)
 
         params = {'token': SLACK_TOKEN,   # トークン
                  'channel': SLACK_CHANNEL, # チャンネルID
