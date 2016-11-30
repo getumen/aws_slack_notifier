@@ -38,7 +38,7 @@ if __name__ == '__main__':
                 }
             ]
         )
-
+        text = ''
         for resp in response['Datapoints']:
             maximum = resp['Maximum']
             date    = resp['Timestamp'].strftime('%Y年%m月%d日')
