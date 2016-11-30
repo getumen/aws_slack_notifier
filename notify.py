@@ -39,7 +39,7 @@ if __name__ == '__main__':
             ]
         )
 
-        for resp in response['Datapoints']
+        for resp in response['Datapoints']:
             maximum = resp['Maximum']
             date    = resp['Timestamp'].strftime('%Y年%m月%d日')
             text += "%sまでのAWSの料金は、$%sです。\n" % (date, maximum)
