@@ -14,42 +14,41 @@ SLACK_CHANNEL = os.environ['SLACK_CHANNEL']
 
 
 if __name__ == '__main__':
-    while True:
-        client = boto3.client(
-            'cloudwatch',
-            aws_access_key_id=AWS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_KEY,
-            region_name=AWS_REGION,
-        )
 
-        end = datetime.datetime.now()
-        start = datetime.datetime(end.year, end.month, 1)
-        response = client.get_metric_statistics (
-            MetricName = 'EstimatedCharges',
-            Namespace  = 'AWS/Billing',
-            Period     = 60*60*24*7,
-            StartTime  = start,
-            EndTime    = end,
-            Statistics = ['Maximum'],
-            Dimensions = [
-                {
-                    'Name': 'Currency',
-                    'Value': 'USD'
-                }
-            ]
-        )
+    client = boto3.client(
+        'cloudwatch',
+        aws_access_key_id=AWS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_KEY,
+        region_name=AWS_REGION,
+    )
 
-        resp = sorted(response['Datapoints'], key=lambda x:x ['Timestamp'], reverse=True)[0]
-        maximum = resp['Maximum']
-        date    = resp['Timestamp'].strftime('%Y年%m月%d日')
-        text = "%sから%sまでのAWSの料金は、$%sです。\n" % (start.strftime('%Y年%m月%d日'), date, maximum)
+    end = datetime.datetime.now()
+    start = datetime.datetime(end.year, end.month, 1)
+    response = client.get_metric_statistics (
+        MetricName = 'EstimatedCharges',
+        Namespace  = 'AWS/Billing',
+        Period     = 60*60*24*7,
+        StartTime  = start,
+        EndTime    = end,
+        Statistics = ['Maximum'],
+        Dimensions = [
+            {
+                'Name': 'Currency',
+                'Value': 'USD'
+            }
+        ]
+    )
 
-        params = {'token': SLACK_TOKEN,   # トークン
-                 'channel': SLACK_CHANNEL, # チャンネルID
-                 'text': text    # 送信するテキスト
-        }
+    resp = sorted(response['Datapoints'], key=lambda x:x ['Timestamp'], reverse=True)[0]
+    maximum = resp['Maximum']
+    date    = resp['Timestamp'].strftime('%Y年%m月%d日')
+    text = "%sから%sまでのAWSの料金は、$%sです。\n" % (start.strftime('%Y年%m月%d日'), date, maximum)
 
-        params = urllib.parse.urlencode(params)
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        requests.get("https://slack.com/api/chat.postMessage", params=params, headers=headers)
-        time.sleep(60*60*24)
+    params = {'token': SLACK_TOKEN,   # トークン
+             'channel': SLACK_CHANNEL, # チャンネルID
+             'text': text    # 送信するテキスト
+    }
+
+    params = urllib.parse.urlencode(params)
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    requests.get("https://slack.com/api/chat.postMessage", params=params, headers=headers)
